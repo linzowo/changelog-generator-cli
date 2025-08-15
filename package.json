@@ -1,0 +1,77 @@
+{
+  "name": "changelog-generator-cli",
+  "version": "1.0.0",
+  "description": "全局CLI工具，用于自动化生成项目更新日志（changelog）",
+  "main": "index.js",
+  "bin": {
+    "changelog-gen": "./bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "index.js",
+    "README.md",
+    "LICENSE",
+    "changelog-config.example.json"
+  ],
+  "scripts": {
+    "test": "echo \"暂无测试用例\" && exit 0",
+    "start": "node bin/cli.js",
+    "dev": "node bin/cli.js",
+    "build": "echo \"No build step required\" && exit 0",
+    "lint": "echo \"No linting configured\" && exit 0",
+    "prepublishOnly": "npm test",
+    "postinstall": "echo \"changelog-generator-cli installed successfully!\"",
+    "generate": "node bin/cli.js generate",
+    "preview": "node bin/cli.js generate --preview",
+    "init": "node bin/cli.js init",
+    "config": "node bin/cli.js config --check"
+  },
+  "keywords": [
+    "changelog",
+    "git",
+    "version",
+    "cli",
+    "automation",
+    "release",
+    "更新日志",
+    "版本管理",
+    "自动化"
+  ],
+  "author": {
+    "name": "linzowo",
+    "email": "linzowo@outlook.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/linzowo/changelog-generator-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linzowo/changelog-generator-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/linzowo/changelog-generator-cli/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "commander": "14.0.0",
+    "find-config": "1.0.0"
+  },
+  "peerDependencies": {
+    "git": "*"
+  },
+  "preferGlobal": true,
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64",
+    "ia32"
+  ],
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+}

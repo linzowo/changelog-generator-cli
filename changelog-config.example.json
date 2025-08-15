@@ -1,0 +1,79 @@
+{
+  "changelog": {
+    "filename": "CHANGELOG.md",
+    "outputPath": "./",
+    "encoding": "utf8",
+    "createIfNotExists": true
+  },
+  "format": {
+    "dateFormat": "YYYY-MM-DD",
+    "timezone": "Asia/Shanghai",
+    "headerTemplate": "## [{version}] - {date}",
+    "commitTemplate": "- {message} ({hash})",
+    "sectionSeparator": "\n\n",
+    "commitSeparator": "\n"
+  },
+  "git": {
+    "includeHash": true,
+    "hashLength": 7,
+    "includeMergeCommits": false,
+    "commitMessageFilters": {
+      "exclude": [
+        "^Merge",
+        "^merge",
+        "^Update",
+        "^update"
+      ],
+      "include": []
+    }
+  },
+  "versioning": {
+    "autoDetectVersion": true,
+    "versionSource": "package.json",
+    "fallbackVersion": "1.0.0",
+    "versionPrefix": "v"
+  },
+  "output": {
+    "prependToFile": true,
+    "addTimestamp": true,
+    "backupExisting": false,
+    "verbose": true
+  },
+  "customSections": {
+    "enabled": false,
+    "sections": [
+      {
+        "title": "🚀 新功能",
+        "keywords": ["feat", "feature", "add"]
+      },
+      {
+        "title": "🐛 修复",
+        "keywords": ["fix", "bug", "patch"]
+      },
+      {
+        "title": "📝 文档",
+        "keywords": ["docs", "doc", "readme"]
+      },
+      {
+        "title": "🎨 样式",
+        "keywords": ["style", "format", "ui"]
+      },
+      {
+        "title": "♻️ 重构",
+        "keywords": ["refactor", "refact"]
+      },
+      {
+        "title": "⚡ 性能",
+        "keywords": ["perf", "performance"]
+      },
+      {
+        "title": "✅ 测试",
+        "keywords": ["test", "spec"]
+      },
+      {
+        "title": "🔧 构建",
+        "keywords": ["build", "ci", "deploy"]
+      }
+    ]
+  }
+}
