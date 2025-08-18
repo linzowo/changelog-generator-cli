@@ -3,6 +3,8 @@
 const { program } = require('commander');
 const { generateChangelog, previewChangelog } = require('../lib/generator');
 const { initConfig, configExists, validateExistingConfig } = require('../lib/initConfig');
+const { getLatestChangelog } = require('../lib/fileOperations');
+const { getChangelogPath, loadConfig } = require('../lib/config');
 const packageJson = require('../package.json');
 
 // 设置程序基本信息
@@ -44,9 +46,9 @@ program
         }
         
         console.log('📋 预览内容：');
-        console.log('=' * 50);
+        console.log('='.repeat(50));
         console.log(result.previewContent);
-        console.log('=' * 50);
+        console.log('='.repeat(50));
         console.log(`版本：${result.version} | 新增 ${result.commitsCount} 条提交`);
         
       } else {
@@ -169,6 +171,111 @@ program.on('--help', () => {
   console.log('  $ changelog-gen config --show      # 显示配置内容');
   console.log('');
 });
+
+// latest 命令：获取最新的 changelog 条目
+program
+  .command('latest')
+  .description('获取最新的 changelog 条目')
+  .option('-f, --format <type>', '输出格式 (json|text|markdown)', 'text')
+  .option('-o, --output <file>', '输出到文件')
+  .option('--version-only', '仅显示版本号')
+  .option('--content-only', '仅显示内容（不含版本信息）')
+  .option('--changelog-path <path>', '指定 CHANGELOG.md 文件路径')
+  .option('-q, --quiet', '静默模式，减少输出信息（适合脚本使用）')
+  .option('--raw', '原始输出，无格式化（适合脚本处理）')
+  .action(async (options) => {
+    try {
+      // 获取配置和 changelog 路径
+      const config = configExists() ? loadConfig(options.quiet || options.raw) : {};
+      const changelogPath = options.changelogPath || getChangelogPath(config);
+      
+         
+      // 获取最新 changelog
+      const result = await getLatestChangelog(changelogPath);
+      
+      if (!result.success) {
+        if (!options.quiet) {
+          console.error('❌ 获取最新 changelog 失败:', result.error);
+          if (result.error.includes('文件不存在')) {
+            console.log('💡 提示: 请确保 CHANGELOG.md 文件存在，或使用 --changelog-path 指定正确路径');
+            console.log(`   当前查找路径: ${changelogPath}`);
+          } else if (result.error.includes('未找到版本信息')) {
+            console.log('💡 提示: CHANGELOG.md 文件可能为空或格式不正确');
+            console.log('   请确保文件包含类似 "## [v1.0.0] - 2025-01-01" 的版本标题');
+          }
+        } else {
+          // 静默模式下仅输出错误到 stderr
+          console.error(result.error);
+        }
+        process.exit(1);
+      }
+      
+      // 处理输出选项
+      let output = '';
+      
+      if (options.raw) {
+        // 原始输出模式：仅输出纯内容，无任何格式化
+        if (options.versionOnly) {
+          output = result.version;
+        } else if (options.contentOnly) {
+          output = result.content;
+        } else {
+          // 原始模式下默认输出完整内容
+          output = result.fullContent;
+        }
+      } else if (options.versionOnly) {
+        output = result.version;
+      } else if (options.contentOnly) {
+        output = result.content;
+      } else {
+        // 根据格式输出
+        switch (options.format) {
+          case 'json':
+            output = JSON.stringify({
+              version: result.version,
+              date: result.date,
+              content: result.content
+            }, null, 2);
+            break;
+          case 'markdown':
+            output = result.fullContent;
+            break;
+          case 'text':
+          default:
+            if (options.quiet) {
+              // 静默模式下简化输出格式
+              output = `${result.version}\n${result.date}\n\n${result.content}`;
+            } else {
+              output = `版本: ${result.version}\n日期: ${result.date}\n\n${result.content}`;
+            }
+            break;
+        }
+      }
+      
+      // 输出结果
+      if (options.output) {
+        const fs = require('fs');
+        const path = require('path');
+        
+        // 确保输出目录存在
+        const outputDir = path.dirname(options.output);
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        fs.writeFileSync(options.output, output, 'utf8');
+        if (!options.quiet) {
+          console.log(`✅ 最新 changelog 已保存到: ${options.output}`);
+        }
+      } else {
+        console.log(output);
+      }
+      
+    } catch (error) {
+      console.error('❌ 执行失败:', error.message);
+      process.exit(1);
+    }
+  });
 
 // 解析命令行参数
 program.parse(process.argv);
