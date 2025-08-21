@@ -279,8 +279,3 @@ program
 
 // 解析命令行参数
 program.parse(process.argv);
-
-// 如果没有提供任何参数，显示帮助信息
-if (process.argv.length === 2) {
-  program.help();
-}
